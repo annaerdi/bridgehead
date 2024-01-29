@@ -18,19 +18,26 @@ pub mod phonebook_contract {
 
         #[ink(message)]
         pub fn add_contact(&mut self, account: AccountId, contact: AccountId) {
-            self.contacts.insert(&account, &contact);
+            self.contacts.insert(account, &contact);
         }
 
         #[ink(message)]
-        pub fn get_contact(&self, account_id: AccountId) -> AccountId {
-            self.contacts.get(&account_id).unwrap()
+        pub fn get_contact(&self, account_id: AccountId) -> Option<AccountId> {
+            self.contacts.get(&account_id)
         }
 
+
+        /// Get address for specific name.
         #[ink(message)]
-        fn print(&self) {
-            let caller = self.env().caller();
-            let message = ink_prelude::format!("got a call from {:?}", caller);
-            ink::env::debug_println!(&message);
+        pub fn get_address(&self, name: AccountId) -> AccountId {
+            self.get_address_or_default(name)
+        }
+
+        /// Returns the address given the hash or the default address.
+        fn get_address_or_default(&self, name: AccountId) -> AccountId {
+            self.contacts
+                .get(name)
+                .unwrap_or(name)
         }
 
 
@@ -40,13 +47,12 @@ pub mod phonebook_contract {
     mod tests {
         use super::*;
 
-        // #[ink::test]
-        // fn new_creates_empty_phone_book() {
-        //     let phonebook = PhoneBook::new();
-        //     let account: AccountId = AccountId::from([0xFF as u8; 32]);
-        //     // Initially, there should be no contact for this account
-        //     assert_eq!(phonebook.get_contact(account), Option<_>);
-        // }
+        #[ink::test]
+        fn new_creates_empty_phone_book() {
+            let phonebook = PhoneBook::new();
+            let non_existent_account: AccountId = [0x00; 32].into();
+            assert_eq!(phonebook.get_contact(non_existent_account), None);
+        }
 
         #[ink::test]
         fn add_and_get_contact_works() {
@@ -65,9 +71,8 @@ pub mod phonebook_contract {
             println!("{:?}", phonebook.get_contact(account));
 
             // Now, the contact should be retrievable
-            assert_eq!(phonebook.get_contact(account), contact1);
-            assert_eq!(phonebook.get_contact(account), contact2);
+            assert_eq!(phonebook.get_contact(account), Some(contact1));
+            assert_eq!(phonebook.get_contact(account), Some(contact2)); // if i dont put some around it, i get the error that it expected `Option<AccountId>`, found `AccountId`
         }
     }
-
 }
