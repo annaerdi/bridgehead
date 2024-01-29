@@ -25,4 +25,31 @@ pub mod phonebook_contract {
             self.contacts.get(&account_id)
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[ink::test]
+        fn new_creates_empty_phone_book() {
+            let phonebook = PhoneBook::new();
+            let account: AccountId = AccountId::from([0xFF as u8; 32]);
+            // Initially, there should be no contact for this account
+            assert_eq!(phonebook.get_contact(account), None);
+        }
+
+        #[ink::test]
+        fn add_and_get_contact_works() {
+            let mut phonebook = PhoneBook::new();
+            let account: AccountId = [0x01; 32].into();
+            let contact: AccountId = [0x02; 32].into();
+
+            // Add a contact
+            phonebook.add_contact(account, contact);
+
+            // Now, the contact should be retrievable
+            assert_eq!(phonebook.get_contact(account), Some(contact));
+        }
+    }
+
 }
