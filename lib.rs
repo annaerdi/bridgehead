@@ -12,25 +12,17 @@ pub mod phonebook_contract {
     impl PhoneBook {
         #[ink(constructor)]
         pub fn new() -> Self {
-            let mut contacts = Mapping::default();
-            let caller = Self::env().caller();
-            contacts.insert(&caller, &caller);
-            Self {
-                contacts,
-            }
+            Self { contacts: Mapping::default() }
         }
 
         #[ink(message)]
-        pub fn add_contact(&mut self, contact: AccountId) {
-            let caller = self.env().caller();
-
-            self.contacts.insert(caller, &contact);
+        pub fn add_contact(&mut self, account: AccountId, contact: AccountId) {
+            self.contacts.insert(&account, &contact);
         }
 
         #[ink(message)]
         pub fn get_contact(&self, account_id: AccountId) -> Option<AccountId> {
             self.contacts.get(&account_id)
         }
-
     }
 }
