@@ -9,6 +9,10 @@ MisTTaken
 - Anna E.: Technical Lead
 - Fridolin D.: Product Owner
 
+## Demo
+
+https://youtu.be/EKrtLUrFm1k
+
 ## Setup
 
 The project is based on ink! smart contracts. For setting up the environment, building the contract and deployong it on a locally running substrate node, please follow the [official ink! documentation](https://use.ink/getting-started/setup/).
